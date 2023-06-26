@@ -2,12 +2,14 @@ import { useEffect } from 'react'
 
 export default function useFileDrop(root, callback) {
   useEffect(() => {
+    /**
+     * @param {DragEvent} e
+     */
     async function handleDrop(e) {
       e.preventDefault()
 
-      /** @type {File} */
-      const file = e.dataTransfer.items[0].getAsFile()
-      callback(await file.text())
+      const file = e.dataTransfer.files[0]
+      callback(await file.text(), file.type)
     }
 
     function handleDragOver(e) {

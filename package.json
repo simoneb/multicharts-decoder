@@ -1,5 +1,5 @@
 {
-  "name": "pla-decoder",
+  "name": "multicharts-decoder",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -12,21 +12,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nearform/pla-decoder.git"
+    "url": "git+https://github.com/nearform/multicharts-decoder.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nearform/pla-decoder/issues"
+    "url": "https://github.com/nearform/multicharts-decoder/issues"
   },
-  "homepage": "https://github.com/nearform/pla-decoder#readme",
+  "homepage": "https://github.com/nearform/multicharts-decoder#readme",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.5",
     "@mui/x-data-grid": "^5.17.20",
+    "ini": "^4.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
