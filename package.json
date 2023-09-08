@@ -29,7 +29,8 @@
     "@mui/x-data-grid": "^5.17.20",
     "ini": "^4.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.2",

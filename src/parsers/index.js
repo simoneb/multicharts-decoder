@@ -1,15 +1,30 @@
-import { type as plaType, handle as handlePla } from './pla'
-import { type as wspType, handle as handleWsp } from './wsp'
+import { extension as plaExtension, handle as handlePla } from './pla'
+import { extension as wspExtension, handle as handleWsp } from './wsp'
+import {
+  extension as performanceReportExtension,
+  handle as handlePerformanceReport
+} from './performance-report'
 
-export const types = [plaType, wspType]
+export const extensions = [
+  plaExtension,
+  wspExtension,
+  performanceReportExtension
+]
 
-export function handle(content, type) {
-  switch (type) {
-    case plaType:
-      return handlePla(content)
-    case wspType:
-      return handleWsp(content)
+/**
+ * @param {File} file
+ */
+export function handle(file) {
+  const extension = file.name.split('.').pop()
+
+  switch (extension) {
+    case plaExtension:
+      return handlePla(file)
+    case wspExtension:
+      return handleWsp(file)
+    case performanceReportExtension:
+      return handlePerformanceReport(file)
     default:
-      throw new Error(`Unknown file type: ${type}`)
+      throw new Error(`Unknown file file extension: ${extension}`)
   }
 }

@@ -8,8 +8,7 @@ export default function useFileDrop(root, callback) {
     async function handleDrop(e) {
       e.preventDefault()
 
-      const file = e.dataTransfer.files[0]
-      callback(await file.text(), file.type)
+      callback(e.dataTransfer.files[0])
     }
 
     function handleDragOver(e) {

@@ -41,11 +41,14 @@ const columns = [
   }
 ]
 
-export const type = 'Application/pla'
+export const extension = 'pla'
 
-export function handle(content) {
+/**
+ * @param {File} file
+ */
+export async function handle(file) {
   const parser = new DOMParser()
-  const doc = parser.parseFromString(content, 'application/xml')
+  const doc = parser.parseFromString(await file.text(), 'application/xml')
 
   const entries = doc.documentElement.querySelectorAll('GraphNode')
 

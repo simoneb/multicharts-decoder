@@ -13,10 +13,13 @@ const columns = [
   }
 ]
 
-export const type = 'Application/wsp'
+export const extension = 'wsp'
 
-export function handle(content) {
-  const parsed = ini.decode(content)
+/**
+ * @param {File} file
+ */
+export async function handle(file) {
+  const parsed = ini.decode(await file.text())
 
   const keys = Object.keys(parsed).filter(key =>
     /Wsp\\Window_\d+\\ChartManager\\Strategy\\StrategyATPersistHelper/.test(key)

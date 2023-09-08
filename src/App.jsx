@@ -3,18 +3,17 @@ import { DataGrid } from '@mui/x-data-grid'
 import { Box, CssBaseline, Typography } from '@mui/material'
 
 import useFileDrop from './hooks/useFileDrop'
-import { handle, types } from './parsers'
+import { handle, extensions } from './parsers'
 
 const root = window
 
 function App() {
   const [data, setData] = useState()
 
-  const processFile = useCallback((content, type) => {
-    setData(handle(content, type))
-  }, [])
-
-  useFileDrop(root, processFile)
+  useFileDrop(
+    root,
+    useCallback(async file => setData(await handle(file)), [])
+  )
 
   return (
     <Box
@@ -36,7 +35,7 @@ function App() {
         />
       ) : (
         <Typography variant="h3">
-          Drop a {types.map(t => t.split('/')[1]).join(' or ')} file anywhere
+          Drop a {extensions.join(' or ')} file anywhere
         </Typography>
       )}
     </Box>
