@@ -21,6 +21,11 @@ const columns = [
     }
   },
   {
+    field: 'contracts',
+    headerName: 'Contracts',
+    align: 'center'
+  },
+  {
     field: 'charts',
     flex: 2,
     headerName: 'Charts',
@@ -118,15 +123,20 @@ export async function handle(file) {
 
   const rows = Array.from(windowNumbers)
     .sort()
-    .map(windowNumber => {
-      const strategyData = `Wsp\\Window_${windowNumber}\\ChartManager\\Strategy\\StrategyATPersistHelper`
-      const charts = getCharts(parsed, windowNumber)
+    .map(windowId => {
+      const strategyData = `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\StrategyATPersistHelper`
+      const charts = getCharts(parsed, windowId)
+      const myContracts =
+        parsed[
+          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`
+        ]
 
       return {
         strategyName: parsed[strategyData].StrategyName,
         symbolName: parsed[strategyData].SymbolName,
         autoTrading: parsed[strategyData].ATOn,
-        charts
+        charts,
+        contracts: myContracts?.Value
       }
     })
 
