@@ -1,4 +1,5 @@
 import ini from 'ini'
+import { Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material'
 
 const columns = [
   {
@@ -10,10 +11,93 @@ const columns = [
     field: 'symbolName',
     flex: 1,
     headerName: 'Symbol Name'
+  },
+  {
+    field: 'autoTrading',
+    headerName: 'Auto Trading',
+    align: 'center',
+    valueFormatter({ value }) {
+      return /true/i.test(value) ? '✅' : '❌'
+    }
+  },
+  {
+    field: 'charts',
+    flex: 2,
+    headerName: 'Charts',
+    renderCell(params) {
+      return (
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Symbol</TableCell>
+              <TableCell>Timeframe</TableCell>
+              <TableCell>Session</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {params.value.flat().map((chart, i) => (
+              <TableRow key={i}>
+                <TableCell>{chart.symbol}</TableCell>
+                <TableCell>{chart.timeframe}</TableCell>
+                <TableCell>{chart.sessionName}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )
+    }
   }
 ]
 
 export const extension = 'wsp'
+
+function getIds(parsed, regexp) {
+  return Array.from(
+    new Set(
+      Object.keys(parsed)
+        .map(key => {
+          const match = key.match(regexp)
+          if (match) {
+            return parseInt(match[1])
+          }
+        })
+        .filter(w => !isNaN(w))
+    )
+  )
+}
+
+function getCharts(parsed, windowId) {
+  const chartIds = getIds(
+    parsed,
+    new RegExp(`Wsp\\\\Window_${windowId}\\\\ChartManager\\\\Chart_(\\d+)`)
+  )
+
+  return chartIds.map(chartId => {
+    const seriesIds = getIds(
+      parsed,
+      new RegExp(
+        `Wsp\\\\Window_${windowId}\\\\ChartManager\\\\Chart_${chartId}\\\\Series_(\\d+)`
+      )
+    )
+
+    return seriesIds
+      .map(seriesId => {
+        const dataSeriesRequest =
+          parsed[
+            `Wsp\\Window_${windowId}\\ChartManager\\Chart_${chartId}\\Series_${seriesId}\\DataSeries\\Request`
+          ]
+
+        if (dataSeriesRequest) {
+          return {
+            symbol: dataSeriesRequest?.Symbol,
+            timeframe: `${dataSeriesRequest?.ResolutionSizeId} ${dataSeriesRequest?.ResolutionName}`,
+            sessionName: dataSeriesRequest?.SessionsName
+          }
+        }
+      })
+      .filter(Boolean)
+  })
+}
 
 /**
  * @param {File} file
@@ -21,14 +105,30 @@ export const extension = 'wsp'
 export async function handle(file) {
   const parsed = ini.decode(await file.text())
 
-  const keys = Object.keys(parsed).filter(key =>
-    /Wsp\\Window_\d+\\ChartManager\\Strategy\\StrategyATPersistHelper/.test(key)
+  const windowNumbers = new Set(
+    Object.keys(parsed)
+      .map(key => {
+        const match = key.match(/Wsp\\Window_(\d+)/)
+        if (match) {
+          return parseInt(match[1])
+        }
+      })
+      .filter(w => !isNaN(w))
   )
 
-  const rows = keys.map(key => ({
-    strategyName: parsed[key].StrategyName.toString(),
-    symbolName: parsed[key].SymbolName.toString()
-  }))
+  const rows = Array.from(windowNumbers)
+    .sort()
+    .map(windowNumber => {
+      const strategyData = `Wsp\\Window_${windowNumber}\\ChartManager\\Strategy\\StrategyATPersistHelper`
+      const charts = getCharts(parsed, windowNumber)
+
+      return {
+        strategyName: parsed[strategyData].StrategyName,
+        symbolName: parsed[strategyData].SymbolName,
+        autoTrading: parsed[strategyData].ATOn,
+        charts
+      }
+    })
 
   return { rows, columns, rowIdProp: 'strategyName' }
 }

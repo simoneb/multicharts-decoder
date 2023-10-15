@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "vitest",
     "lint": "eslint . --ext .js,.jsx",
     "dev": "vite",
     "build": "vite build",
@@ -46,7 +47,8 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
     "prettier": "^2.8.3",
-    "vite": "^4.0.4"
+    "vite": "^4.0.4",
+    "vitest": "^0.34.6"
   },
   "lint-staged": {
     "*.{js,jsx}": "eslint --cache --fix"
