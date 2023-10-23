@@ -5,3 +5,14 @@
 # MultiCharts decoder
 
 Decode different types of MultiCharts files.
+
+The types of files supported are:
+
+- PLA files
+- Workspace files
+- Performance report Excel files
+
+# Usage
+
+- Open the tool at https://simoneb.github.io/multicharts-decoder/
+- Drag any of the supported files onto the page
