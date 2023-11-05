@@ -129,6 +129,8 @@ export async function handle(file) {
       const myContracts =
         parsed[
           `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`
+        ] || parsed[
+          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_MyContracts`
         ]
 
       return {
