@@ -126,19 +126,22 @@ export async function handle(file) {
     .map(windowId => {
       const strategyData = `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\StrategyATPersistHelper`
       const charts = getCharts(parsed, windowId)
-      const myContracts =
-        parsed[
-          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`
-        ] || parsed[
-          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_MyContracts`
-        ]
+
+      const contractsKey = Object.keys(parsed).find(
+        key =>
+          key.localeCompare(
+            `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`,
+            undefined,
+            { sensitivity: 'base' }
+          ) === 0
+      )
 
       return {
         strategyName: parsed[strategyData].StrategyName,
         symbolName: parsed[strategyData].SymbolName,
         autoTrading: parsed[strategyData].ATOn,
         charts,
-        contracts: myContracts?.Value
+        contracts: parsed[contractsKey]?.Value
       }
     })
 
