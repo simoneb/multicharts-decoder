@@ -1,20 +1,27 @@
 import { read, utils } from 'xlsx'
 
-const SHEETS = {
+export const SHEETS = {
   strategyAnalysis: 'Strategy Analysis',
   tradeAnalysis: 'Trade Analysis',
+  listOfTrades: 'List of Trades',
   settings: 'Settings'
 }
 
-const HEADINGS = {
-  returnOnMaxStrategyDD: 'Return on Max Strategy Drawdown'
+export const KEYS = {
+  returnOnMaxDD: 'Return on Max Strategy Drawdown',
+  percentInTheMarket: 'Percent in the Market',
+  startDate: 'Start Date',
+  endDate: 'End Date',
+  totalTrades: 'Total # of Trades'
 }
 
 const rules = [
   function returnOnMaxStrategyDD({ strategyAnalysis }) {
-    const row = strategyAnalysis.find(
-      row => row[0] === HEADINGS.returnOnMaxStrategyDD
-    )
+    if (!strategyAnalysis) return
+
+    const row = strategyAnalysis.find(row => row[0] === KEYS.returnOnMaxDD)
+
+    if (!row) return
 
     const value = row[1]
 
@@ -23,17 +30,37 @@ const rules = [
         type: 'error',
         message: `Return on Max Strategy Drawdown is ${value.toFixed(
           2
-        )}. It should be at least 10.`
+        )}. It should be at least 10`
+      }
+    }
+  },
+  function percentInTheMarket({ strategyAnalysis }) {
+    if (!strategyAnalysis) return
+
+    const row = strategyAnalysis.find(
+      ([key]) => key === KEYS.percentInTheMarket
+    )
+
+    if (!row) return
+
+    const value = parseFloat(row[1])
+
+    if (value > 50) {
+      return {
+        type: 'error',
+        message: `The strategy spends more than 50% of the time in the market`
       }
     }
   },
   function numberOfTrades({ tradeAnalysis, settings }) {
-    const startDate = settings.find(row => row[0] === 'Start Date')[1]
-    const endDate = settings.find(row => row[0] === 'End Date')[1]
+    if (!tradeAnalysis || !settings) return
+
+    const startDate = settings.find(row => row[0] === KEYS.startDate)[1]
+    const endDate = settings.find(row => row[0] === KEYS.endDate)[1]
     const numberOfYears = (endDate - startDate) / (1000 * 60 * 60 * 24 * 365)
 
     const totalTrades = tradeAnalysis.find(
-      row => row[0] === 'Total # of Trades'
+      row => row[0] === KEYS.totalTrades
     )[1]
 
     const tradesPerYear = totalTrades / numberOfYears
@@ -41,14 +68,32 @@ const rules = [
     if (tradesPerYear < 2 * 12) {
       return {
         type: 'warning',
-        message: `The strategy does  less than 2 trades per month.`
+        message: `The strategy does less than 2 trades per month`
       }
     }
 
     if (tradesPerYear > 10 * 12) {
       return {
         type: 'warning',
-        message: `The strategy does more than 10 trades per month.`
+        message: `The strategy does more than 10 trades per month`
+      }
+    }
+  },
+  function tradeDuration({ listOfTrades }) {
+    if (!listOfTrades) return
+
+    const trades = listOfTrades.slice(3)
+
+    for (let i = 0; i < trades.length - 1; i += 2) {
+      const entry = trades[i]
+      const exit = trades[i + 1]
+      const duration = (exit[4] - entry[4]) / (1000 * 60 * 60 * 24)
+
+      if (duration > 10) {
+        return {
+          type: 'warning',
+          message: `Trade #${i / 2 + 1} lasts more than 10 days`
+        }
       }
     }
   }
@@ -95,7 +140,11 @@ export async function handle(file) {
       return acc
     }, {})
 
-  const rows = rules.map(rule => rule(data)).filter(Boolean)
+  const rows = runRules(data)
 
   return { rows, columns, rowIdProp: 'message' }
+}
+
+export function runRules(data) {
+  return rules.map(rule => rule(data)).filter(Boolean)
 }
