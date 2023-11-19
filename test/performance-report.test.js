@@ -1,6 +1,67 @@
 import { expect, describe, test } from 'vitest'
+import { read, utils } from 'xlsx'
+import fs from 'fs'
+import path from 'path'
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import ExcelJS from 'exceljs'
 
 import { KEYS, runRules } from '../src/parsers/performance-report'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+describe('dump excel', () => {
+  test('dump excel', async () => {
+    const file = new File(
+      [
+        fs.readFileSync(
+          path.join(
+            __dirname,
+            '@CL  CL 20..18 Bias Vasco M15 FryLong Backtesting Strategy Performance Report.xlsx'
+          )
+        )
+      ],
+      'performance-report.wsp'
+    )
+    const workbook1 = read(await file.arrayBuffer(), { cellDates: true })
+    const sheet1 = workbook1.Sheets[workbook1.SheetNames[1]]
+
+    const workbook2 = new ExcelJS.Workbook()
+    await workbook2.xlsx.load(file.arrayBuffer())
+    // .readFile(
+    //   path.join(
+    //     __dirname,
+    //     '@CL  CL 20..18 Bias Vasco M15 FryLong Backtesting Strategy Performance Report.xlsx'
+    //   )
+    // )
+    const sheet2 = workbook2.worksheets[1]
+
+    const sheet1Values = utils.sheet_to_json(sheet1, { header: 1 })
+    const sheet2Values = sheet2.getSheetValues().map(r => r.slice(1))
+
+    for (let i = 0; i < 10; i++) {
+      console.log({ a: sheet1Values[i], b: sheet2Values[i + 1] })
+    }
+
+    // for (const image of sheet2.getImages()) {
+    //   console.log(
+    //     'processing image row',
+    //     image.range.tl.nativeRow,
+    //     'col',
+    //     image.range.tl.nativeCol,
+    //     'imageId',
+    //     image.imageId
+    //   )
+    //   // fetch the media item with the data (it seems the imageId matches up with m.index?)
+    //   const img = workbook2.model.media.find(m => m.index === image.imageId)
+
+    //   // fs.writeFileSync(
+    //   //   `${image.range.tl.nativeRow}.${image.range.tl.nativeCol}.${img.name}.${img.extension}`,
+    //   //   img.buffer
+    //   // )
+    // }
+  })
+})
 
 describe('maxDD', () => {
   test('violation', () => {
