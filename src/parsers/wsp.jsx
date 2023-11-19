@@ -37,6 +37,7 @@ const columns = [
               <TableCell>Symbol</TableCell>
               <TableCell>Timeframe</TableCell>
               <TableCell>Session</TableCell>
+              <TableCell>Timezone</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -45,6 +46,7 @@ const columns = [
                 <TableCell>{chart.symbol}</TableCell>
                 <TableCell>{chart.timeframe}</TableCell>
                 <TableCell>{chart.sessionName}</TableCell>
+                <TableCell>{chart.timezone}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -96,7 +98,8 @@ function getCharts(parsed, windowId) {
           return {
             symbol: dataSeriesRequest?.Symbol,
             timeframe: `${dataSeriesRequest?.ResolutionSizeId} ${dataSeriesRequest?.ResolutionName}`,
-            sessionName: dataSeriesRequest?.SessionsName
+            sessionName: dataSeriesRequest?.SessionsName,
+            timezone: dataSeriesRequest?.TimeZoneName
           }
         }
       })
