@@ -75,9 +75,12 @@ describe('maxDD', () => {
   })
 
   test('pass', () => {
-    expect(runRules({ strategyAnalysis: [[KEYS.returnOnMaxDD, 10]] })).toEqual(
-      []
-    )
+    expect(runRules({ strategyAnalysis: [[KEYS.returnOnMaxDD, 10]] })).toEqual([
+      {
+        type: 'success',
+        message: 'Return on Max Strategy Drawdown is 10.00'
+      }
+    ])
   })
 })
 
@@ -96,7 +99,12 @@ describe('percent in the market', () => {
   test('pass', () => {
     expect(
       runRules({ strategyAnalysis: [[KEYS.percentInTheMarket, '4.38%']] })
-    ).toEqual([])
+    ).toEqual([
+      {
+        message: 'The strategy spends 4.38% of the time in the market',
+        type: 'success'
+      }
+    ])
   })
 })
 
@@ -148,7 +156,12 @@ describe('min trades', () => {
           [KEYS.endDate, now]
         ]
       })
-    ).toEqual([])
+    ).toEqual([
+      {
+        message: 'The strategy does 100.00 trades per year',
+        type: 'success'
+      }
+    ])
   })
 })
 
@@ -204,6 +217,8 @@ describe('trade duration', () => {
           [1, 1, 'EntryLong', 'Bias', new Date(2012, 1, 26)]
         ]
       })
-    ).toEqual([])
+    ).toEqual([
+      { message: 'All trades last less than 10 days', type: 'success' }
+    ])
   })
 })

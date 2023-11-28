@@ -33,6 +33,11 @@ const rules = [
         )}. It should be at least 10`
       }
     }
+
+    return {
+      type: 'success',
+      message: `Return on Max Strategy Drawdown is ${value.toFixed(2)}`
+    }
   },
   function percentInTheMarket({ strategyAnalysis }) {
     if (!strategyAnalysis) return
@@ -50,6 +55,13 @@ const rules = [
         type: 'error',
         message: `The strategy spends more than 50% of the time in the market`
       }
+    }
+
+    return {
+      type: 'success',
+      message: `The strategy spends ${value.toFixed(
+        2
+      )}% of the time in the market`
     }
   },
   function numberOfTrades({ tradeAnalysis, settings }) {
@@ -78,6 +90,11 @@ const rules = [
         message: `The strategy does more than 10 trades per month`
       }
     }
+
+    return {
+      type: 'success',
+      message: `The strategy does ${tradesPerYear.toFixed(2)} trades per year`
+    }
   },
   function tradeDuration({ listOfTrades }) {
     if (!listOfTrades) return
@@ -96,6 +113,11 @@ const rules = [
         }
       }
     }
+
+    return {
+      type: 'success',
+      message: `All trades last less than 10 days`
+    }
   }
 ]
 
@@ -109,6 +131,8 @@ const columns = [
           return '❌'
         case 'warning':
           return '⚠️'
+        case 'success':
+          return '✅'
         default:
           return 'ℹ️'
       }
