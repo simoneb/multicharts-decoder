@@ -170,24 +170,24 @@ export async function handle(file) {
         `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\MCBroker\\MCBrokerObject\\PluginsProxies\\MCPluginProxiesCollection\\Item_${interactiveBrokersPluginId}\\Proxy\\MCPluginProxy\\AdditionalInfo`
       ]
 
-    console.log(brokerPluginAdditionalInfo)
-
-    const additionalInfo = ini.parse(
-      hex2a(
-        Object.keys(brokerPluginAdditionalInfo)
-          .filter(k => !['PluginData', '{', '}'].includes(k))
-          .join(' ')
-          .split(' ')
-          .join('')
+    const additionalInfo =
+      brokerPluginAdditionalInfo &&
+      ini.parse(
+        hex2a(
+          Object.keys(brokerPluginAdditionalInfo)
+            .filter(k => !['PluginData', '{', '}'].includes(k))
+            .join(' ')
+            .split(' ')
+            .join('')
+        )
       )
-    )
 
     return {
       strategyName: parsed[strategyData].StrategyName,
       symbolName: parsed[strategyData].SymbolName,
       autoTrading: parsed[strategyData].ATOn,
-      tif: additionalInfo.AdditionalsParams.TIF,
-      defaultAccount: additionalInfo.AdditionalsParams.DefaultAccount,
+      tif: additionalInfo?.AdditionalsParams.TIF,
+      defaultAccount: additionalInfo?.AdditionalsParams.DefaultAccount,
       charts,
       contracts: parsed[contractsKey]?.Value
     }
