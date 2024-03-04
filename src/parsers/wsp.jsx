@@ -132,57 +132,66 @@ function getCharts(parsed, windowId) {
 export async function handle(file) {
   const parsed = ini.decode(await file.text())
 
-  const windowNumbers = new Set(
-    Object.keys(parsed)
-      .map(key => {
-        const match = key.match(/Wsp\\Window_(\d+)/)
-        if (match) {
-          return parseInt(match[1])
-        }
-      })
-      .filter(w => !isNaN(w))
-  )
+  const windowNumbers = getIds(parsed, /Wsp\\Window_(\d+)/)
 
-  const rows = Array.from(windowNumbers)
-    .sort()
-    .map(windowId => {
-      const strategyData = `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\StrategyATPersistHelper`
-      const charts = getCharts(parsed, windowId)
+  const rows = windowNumbers.sort().map(windowId => {
+    const strategyData = `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\StrategyATPersistHelper`
+    const charts = getCharts(parsed, windowId)
 
-      const contractsKey = Object.keys(parsed).find(
-        key =>
-          key.localeCompare(
-            `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`,
-            undefined,
-            { sensitivity: 'base' }
-          ) === 0
+    const contractsKey = Object.keys(parsed).find(
+      key =>
+        key.localeCompare(
+          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\SignalObject_0\\SignalHelper\\InputHelper\\Input_myContracts`,
+          undefined,
+          { sensitivity: 'base' }
+        ) === 0
+    )
+
+    const brokerPluginsIds = getIds(
+      parsed,
+      new RegExp(
+        `Wsp\\\\Window_${windowId}\\\\ChartManager\\\\Strategy\\\\MCBroker\\\\MCBrokerObject\\\\PluginsProxies\\\\MCPluginProxiesCollection\\\\Item_(\\d+)`
       )
+    )
 
-      const brokerPluginAdditionalInfo =
+    console.log(brokerPluginsIds)
+
+    const interactiveBrokersPluginId = brokerPluginsIds.find(
+      id =>
         parsed[
-          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\MCBroker\\MCBrokerObject\\PluginsProxies\\MCPluginProxiesCollection\\Item_0\\Proxy\\MCPluginProxy\\AdditionalInfo`
-        ]
+          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\MCBroker\\MCBrokerObject\\PluginsProxies\\MCPluginProxiesCollection\\Item_${id}`
+        ].Name === 'Interactive Brokers'
+    )
 
-      const additionalInfo = ini.parse(
-        hex2a(
-          Object.keys(brokerPluginAdditionalInfo)
-            .filter(k => !['PluginData', '{', '}'].includes(k))
-            .join(' ')
-            .split(' ')
-            .join('')
-        )
+    console.log(interactiveBrokersPluginId)
+
+    const brokerPluginAdditionalInfo =
+      parsed[
+        `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\MCBroker\\MCBrokerObject\\PluginsProxies\\MCPluginProxiesCollection\\Item_${interactiveBrokersPluginId}\\Proxy\\MCPluginProxy\\AdditionalInfo`
+      ]
+
+    console.log(brokerPluginAdditionalInfo)
+
+    const additionalInfo = ini.parse(
+      hex2a(
+        Object.keys(brokerPluginAdditionalInfo)
+          .filter(k => !['PluginData', '{', '}'].includes(k))
+          .join(' ')
+          .split(' ')
+          .join('')
       )
+    )
 
-      return {
-        strategyName: parsed[strategyData].StrategyName,
-        symbolName: parsed[strategyData].SymbolName,
-        autoTrading: parsed[strategyData].ATOn,
-        tif: additionalInfo.AdditionalsParams.TIF,
-        defaultAccount: additionalInfo.AdditionalsParams.DefaultAccount,
-        charts,
-        contracts: parsed[contractsKey]?.Value
-      }
-    })
+    return {
+      strategyName: parsed[strategyData].StrategyName,
+      symbolName: parsed[strategyData].SymbolName,
+      autoTrading: parsed[strategyData].ATOn,
+      tif: additionalInfo.AdditionalsParams.TIF,
+      defaultAccount: additionalInfo.AdditionalsParams.DefaultAccount,
+      charts,
+      contracts: parsed[contractsKey]?.Value
+    }
+  })
 
   return { rows, columns, rowIdProp: 'strategyName' }
 }
