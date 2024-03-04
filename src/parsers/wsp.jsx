@@ -1,5 +1,6 @@
 import ini from 'ini'
 import { Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material'
+import { hex2a } from '../util'
 
 const columns = [
   {
@@ -19,6 +20,24 @@ const columns = [
     valueFormatter({ value }) {
       return /true/i.test(value) ? '✅' : '❌'
     }
+  },
+  {
+    field: 'tif',
+    headerName: 'TIF',
+    valueFormatter({ value }) {
+      switch (value) {
+        case 0:
+          return 'DAY'
+        case 1:
+          return 'GTC'
+        case 2:
+          return 'IOC'
+      }
+    }
+  },
+  {
+    field: 'defaultAccount',
+    headerName: 'Default Account'
   },
   {
     field: 'contracts',
@@ -139,10 +158,27 @@ export async function handle(file) {
           ) === 0
       )
 
+      const brokerPluginAdditionalInfo =
+        parsed[
+          `Wsp\\Window_${windowId}\\ChartManager\\Strategy\\MCBroker\\MCBrokerObject\\PluginsProxies\\MCPluginProxiesCollection\\Item_0\\Proxy\\MCPluginProxy\\AdditionalInfo`
+        ]
+
+      const additionalInfo = ini.parse(
+        hex2a(
+          Object.keys(brokerPluginAdditionalInfo)
+            .filter(k => !['PluginData', '{', '}'].includes(k))
+            .join(' ')
+            .split(' ')
+            .join('')
+        )
+      )
+
       return {
         strategyName: parsed[strategyData].StrategyName,
         symbolName: parsed[strategyData].SymbolName,
         autoTrading: parsed[strategyData].ATOn,
+        tif: additionalInfo.AdditionalsParams.TIF,
+        defaultAccount: additionalInfo.AdditionalsParams.DefaultAccount,
         charts,
         contracts: parsed[contractsKey]?.Value
       }
