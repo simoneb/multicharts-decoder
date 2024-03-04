@@ -29,7 +29,7 @@
     "@mui/material": "^5.12.2",
     "@mui/x-data-grid": "^5.17.20",
     "exceljs": "^4.4.0",
-    "ini": "^4.1.1",
+    "ini": "^4.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
