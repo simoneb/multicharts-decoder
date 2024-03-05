@@ -24,7 +24,7 @@
   "homepage": "https://github.com/nearform/multicharts-decoder#readme",
   "dependencies": {
     "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
+    "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.15.11",
     "@mui/x-data-grid": "^6.19.6",
