@@ -30,7 +30,7 @@
     "@mui/x-data-grid": "^7.3.0",
     "exceljs": "^4.4.0",
     "ini": "^4.1.2",
-    "react": "^18.3.0",
+    "react": "^18.3.1",
     "react-dom": "^18.3.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
