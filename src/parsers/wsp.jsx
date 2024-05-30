@@ -24,8 +24,8 @@ const columns = [
   {
     field: 'tif',
     headerName: 'TIF',
-    valueFormatter({ value }) {
-      switch (value) {
+    valueFormatter(data) {
+      switch (data?.value) {
         case 0:
           return 'DAY'
         case 1:
@@ -57,6 +57,9 @@ const columns = [
               <TableCell>Timeframe</TableCell>
               <TableCell>Session</TableCell>
               <TableCell>Timezone</TableCell>
+              <TableCell>Start date</TableCell>
+              <TableCell>End date</TableCell>
+              <TableCell>End anchored</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -66,6 +69,9 @@ const columns = [
                 <TableCell>{chart.timeframe}</TableCell>
                 <TableCell>{chart.sessionName}</TableCell>
                 <TableCell>{chart.timezone}</TableCell>
+                <TableCell>{formatDate(chart.startDate)}</TableCell>
+                <TableCell>{formatDate(chart.finishDate)}</TableCell>
+                <TableCell>{chart.finishDateAnchored ? 'Yes' : 'No'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -76,6 +82,14 @@ const columns = [
 ]
 
 export const extension = 'wsp'
+
+function formatDate(date) {
+  return date.toLocaleDateString('it-IT', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  })
+}
 
 function getIds(parsed, regexp) {
   return Array.from(
@@ -115,10 +129,13 @@ function getCharts(parsed, windowId) {
 
         if (dataSeriesRequest) {
           return {
-            symbol: dataSeriesRequest?.Symbol,
-            timeframe: `${dataSeriesRequest?.ResolutionSizeId} ${dataSeriesRequest?.ResolutionName}`,
-            sessionName: dataSeriesRequest?.SessionsName,
-            timezone: dataSeriesRequest?.TimeZoneName
+            symbol: dataSeriesRequest.Symbol,
+            timeframe: `${dataSeriesRequest.ResolutionSizeId} ${dataSeriesRequest.ResolutionName}`,
+            sessionName: dataSeriesRequest.SessionsName,
+            timezone: dataSeriesRequest.TimeZoneName,
+            startDate: new Date(1899, 11, 30 + dataSeriesRequest.StartDateId),
+            finishDate: new Date(1899, 11, 30 + dataSeriesRequest.FinishDateId),
+            finishDateAnchored: dataSeriesRequest.AnchorFinishDate === '1'
           }
         }
       })
