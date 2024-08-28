@@ -35,7 +35,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.4.0",
+    "@commitlint/cli": "^19.4.1",
     "@commitlint/config-conventional": "^19.2.2",
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
