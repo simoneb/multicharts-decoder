@@ -4,14 +4,13 @@ import { Box, CssBaseline, Typography } from '@mui/material'
 
 import useFileDrop from './hooks/useFileDrop'
 import { handle, extensions } from './parsers'
-
-const root = window
+import GridToolbar from './GridToolbar'
 
 function App() {
   const [data, setData] = useState()
 
   useFileDrop(
-    root,
+    window,
     useCallback(async file => setData(await handle(file)), [])
   )
 
@@ -32,10 +31,12 @@ function App() {
           getRowId={r => r[data.rowIdProp]}
           rows={data.rows}
           columns={data.columns}
+          slots={{ toolbar: GridToolbar }}
         />
       ) : (
         <Typography variant="h3">
-          Drop a {extensions.join(' or ')} file anywhere
+          Drop a {extensions.slice(0, extensions.length - 1).join(', ')} or{' '}
+          {extensions.at(-1)} file anywhere
         </Typography>
       )}
     </Box>
