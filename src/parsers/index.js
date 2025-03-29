@@ -25,6 +25,6 @@ export function handle(file) {
     case performanceReportExtension:
       return handlePerformanceReport(file)
     default:
-      throw new Error(`Unknown file file extension: ${extension}`)
+      throw new Error(`Unknown file extension: ${extension}`)
   }
 }
