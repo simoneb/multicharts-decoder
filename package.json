@@ -30,14 +30,14 @@
     "@mui/x-data-grid": "^7.24.0",
     "exceljs": "^4.4.0",
     "ini": "^5.0.0",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-dom": "^19.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@types/react": "^19.0.7",
+    "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.57.0",
