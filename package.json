@@ -27,7 +27,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
-    "@mui/x-data-grid": "^8.16.0",
+    "@mui/x-data-grid": "^8.17.0",
     "exceljs": "^4.4.0",
     "ini": "^6.0.0",
     "react": "^19.1.1",
